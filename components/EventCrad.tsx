@@ -23,7 +23,7 @@ const EventCrad = ({title, image, slug, location, date, time}:Props) => {
       event_time: time,
     })
   }
-
+  
   return (
     <Link href={`/events/${slug}`} id="event-card" onClick={handleEventCardClick}>
         <Image src={image} alt={title} width={410} height={300} className="poster"/>
