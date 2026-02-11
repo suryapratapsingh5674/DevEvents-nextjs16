@@ -3,12 +3,24 @@ import ExpoloreBtn from "@/components/ExpoloreBtn"
 import { IEvent } from "@/database/event.model";
 import { cacheLife } from "next/cache";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL;
+
+const normalizeBaseUrl = (value?: string) => {
+  if (!value) {
+    return "http://localhost:3000";
+  }
+
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  return `https://${value}`;
+};
 
 const page = async () => {
   "use cache"
   cacheLife('hours');
-  const response = await fetch(`${BASE_URL}/api/events`);
+  const response = await fetch(new URL("/api/events", normalizeBaseUrl(BASE_URL)));
   const {events} = await response.json();
 
   return (
