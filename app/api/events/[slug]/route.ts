@@ -8,15 +8,15 @@ function isValidSlug(value: string): boolean {
   return value.length > 0 && SLUG_REGEX.test(value);
 }
 
-type RouteContext = { params?: { slug?: string | string[] } };
+type RouteContext = { params: Promise<{ slug: string }> };
 
-function extractSlug(req: NextRequest, context?: RouteContext): string | null {
-  const slugParam = context?.params?.slug;
-  if (Array.isArray(slugParam)) {
-    return slugParam[0] ?? null;
-  }
-  if (typeof slugParam === "string") {
-    return slugParam;
+async function extractSlug(
+  req: NextRequest,
+  context: RouteContext
+): Promise<string | null> {
+  const { slug } = await context.params;
+  if (typeof slug === "string" && slug.length > 0) {
+    return slug;
   }
 
   // Fallback when params are not populated (e.g., edge cases in routing)
@@ -28,7 +28,7 @@ function extractSlug(req: NextRequest, context?: RouteContext): string | null {
 
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const rawSlug = extractSlug(req, context);
+    const rawSlug = await extractSlug(req, context);
     if (typeof rawSlug !== "string") {
       return NextResponse.json(
         { message: "Missing slug parameter" },
