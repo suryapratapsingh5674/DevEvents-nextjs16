@@ -5,19 +5,42 @@ import { IEvent } from "@/database/event.model";
 import { GetSimilerEventsBySlug } from "@/lib/actions/event.actions";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-const EventDetailsPage = async ({params}:{params: Promise<{slug:string}>}) => {
-    const {slug} = await params; 
-    const request = await fetch(`${BASE_URL}/api/events/${slug}`);
-    const {event:{description, image, overview, date, time, location, mode, agenda, audience, tags, organizer}} = await request.json();
+type EventDetailsProps = {
+  params: Promise<{ slug: string }>;
+};
 
-    if(!description) return notFound();
+const EventDetailsLoader = async ({ params }: EventDetailsProps) => {
+  const { slug } = await params;
+  return <EventDetailsContent slug={slug} />;
+};
 
-    const bookings = 10;
+const EventDetailsContent = async ({ slug }: { slug: string }) => {
+  const request = await fetch(`${BASE_URL ?? ""}/api/events/${slug}`);
+  const data = await request.json();
+  const event = data?.event;
+  if (!request.ok || !event?.description) return notFound();
 
-    const similarEvents = await GetSimilerEventsBySlug(slug);
+  const {
+    description,
+    image,
+    overview,
+    date,
+    time,
+    location,
+    mode,
+    agenda,
+    audience,
+    tags,
+    organizer,
+  } = event;
+
+  const bookings = 10;
+
+  const similarEvents = await GetSimilerEventsBySlug(slug);
 
   return (
     <section id="event">
@@ -75,7 +98,7 @@ const EventDetailsPage = async ({params}:{params: Promise<{slug:string}>}) => {
               ):(
                 <p className="text-sm">Be a </p>
               )}
-              <BookEvents/>
+              <BookEvents eventId={event._id} slug={event.slug}/>
             </div>
           </aside>
         </div>
@@ -98,5 +121,13 @@ const EventDetailsPage = async ({params}:{params: Promise<{slug:string}>}) => {
     </section>
   )
 }
+
+const EventDetailsPage = ({ params }: EventDetailsProps) => {
+  return (
+    <Suspense fallback={<div className="section">Loading event...</div>}>
+      <EventDetailsLoader params={params} />
+    </Suspense>
+  );
+};
 
 export default EventDetailsPage

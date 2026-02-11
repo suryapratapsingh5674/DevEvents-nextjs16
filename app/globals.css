@@ -270,4 +270,118 @@
       }
     }
   }
+
+  #create-event {
+    @apply relative overflow-hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -20% 10% auto -10%;
+      height: 420px;
+      background:
+        radial-gradient(closest-side, rgba(89, 222, 202, 0.18), transparent 70%),
+        radial-gradient(closest-side, rgba(148, 234, 255, 0.12), transparent 65%);
+      filter: blur(2px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto -15% -35% auto;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(89, 222, 202, 0.12), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .create-event-shell {
+      @apply relative z-10 flex flex-col gap-8 max-w-5xl mx-auto;
+    }
+
+    .header {
+      @apply flex flex-col items-center gap-3 text-center;
+
+      h1 {
+        @apply text-gradient;
+      }
+
+      p {
+        @apply text-light-100 text-lg max-sm:text-sm;
+      }
+    }
+
+    .form-card {
+      @apply glass border border-border-dark rounded-2xl p-6 md:p-8 card-shadow;
+    }
+  }
+
+  #create-event-form {
+    @apply flex flex-col gap-6;
+
+    .form-grid {
+      @apply grid gap-5 md:grid-cols-2 lg:grid-cols-3;
+    }
+
+    .form-grid > div {
+      @apply flex flex-col gap-2;
+    }
+
+    .span-2 {
+      @apply md:col-span-2;
+    }
+
+    .span-3 {
+      @apply lg:col-span-3;
+    }
+
+    label {
+      @apply text-light-200 text-xs uppercase tracking-[0.18em];
+    }
+
+    input:not([type="file"]),
+    textarea,
+    select {
+      @apply bg-dark-200/70 border border-transparent rounded-[10px] px-4 py-2.5 text-light-100 w-full;
+      @apply focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30;
+    }
+
+    input:not([type="file"]),
+    select {
+      @apply min-h-[44px];
+    }
+
+    input[type="file"] {
+      appearance: auto;
+      cursor: pointer;
+      pointer-events: auto;
+      @apply bg-dark-200/50 border border-dashed border-dark-200 rounded-[10px] px-4 py-3 w-full;
+    }
+
+
+    textarea {
+      resize: none !important;
+      @apply min-h-[90px];
+    }
+
+    .helper {
+      @apply text-light-200 text-xs mt-1;
+    }
+
+    .form-error {
+      @apply text-red-300 text-sm;
+    }
+
+    button {
+      @apply bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-[10px] px-4 py-3 text-lg font-semibold text-black;
+      @apply transition-transform duration-200 ease-out hover:-translate-y-0.5;
+    }
+
+    button:disabled {
+      @apply opacity-60 cursor-not-allowed;
+    }
+  }
 }
