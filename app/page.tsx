@@ -20,8 +20,27 @@ const normalizeBaseUrl = (value?: string) => {
 const page = async () => {
   "use cache"
   cacheLife('hours');
-  const response = await fetch(new URL("/api/events", normalizeBaseUrl(BASE_URL)));
-  const {events} = await response.json();
+  let events: IEvent[] = [];
+  try {
+    const response = await fetch(
+      new URL("/api/events", normalizeBaseUrl(BASE_URL))
+    );
+    const contentType = response.headers.get("content-type") || "";
+
+    if (response.ok && contentType.includes("application/json")) {
+      const data = await response.json();
+      if (Array.isArray(data?.events)) {
+        events = data.events;
+      }
+    } else {
+      console.warn("Events fetch failed", {
+        status: response.status,
+        contentType,
+      });
+    }
+  } catch (error) {
+    console.warn("Events fetch error", error);
+  }
 
   return (
     <section>
@@ -31,7 +50,7 @@ const page = async () => {
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
         <ul className="events list-none">
-          {events && events.length > 0 && events.map((event:IEvent)=>(
+          {events.length > 0 && events.map((event:IEvent)=>(
             <li key={event.title}>
               <EventCrad {...event}/>
             </li>
